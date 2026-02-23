@@ -33,9 +33,11 @@ printf '\033]4;14;rgb:fe/ff/ff\033\\'   # 14 Bright Cyan   → white
 printf '\033]4;15;rgb:fe/ff/ff\033\\'   # 15 Bright White  → white
 
 # ─── Special colors ──────────────────────────────────────────────────
+# NOTE: We do NOT set OSC 11 (background) here. The .terminal profile
+# handles background color + blur + transparency. OSC 11 would override
+# it with a flat opaque color, killing the glass effect.
 
 printf '\033]10;rgb:f5/f1/f1\033\\'     # Foreground text
-printf '\033]11;rgb:25/28/8b\033\\'     # Background - deep glass blue
 printf '\033]12;rgb:fe/ff/ff\033\\'     # Cursor
 
 # ─── SGR reset ───────────────────────────────────────────────────────
