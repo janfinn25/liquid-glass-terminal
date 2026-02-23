@@ -1,78 +1,46 @@
 # Liquid Glass Terminal
 
-A translucent "liquid glass" theme for your terminal. Works with Claude Code, Codex, or any CLI tool.
+A monochrome "liquid glass" theme for Terminal.app. White text on a translucent deep blue background with blur.
 
-## Setup (one time)
+Works with Claude Code, Codex, or any CLI tool.
 
-**Step 1** - Import the terminal profile:
+## How it works
 
-Double-click `themes/Liquid Glass.terminal`. This gives you the glass window (blur, transparency, dark blue background).
+The `.terminal` profile maps **all 16 ANSI color slots to white**. CLI tools like Claude Code use named ANSI colors (`.red`, `.green`, `.cyan`, etc.) — by mapping them all to white, everything renders as clean monochrome text on a blurred glass background.
 
-**Step 2** - Install the color scripts:
+```
+Terminal.app profile does:
+  - Background:  deep blue (#25288b)
+  - Blur:        77%
+  - Opacity:     ~47% (inactive windows)
+  - ANSI 1-15:   all → white (#feffff)
+  - Foreground:  soft white (#f5f1f1)
+```
+
+## Setup
+
+**Double-click** `themes/Liquid Glass.terminal`
+
+That's it. Terminal.app will import the profile. Set it as default if you want.
+
+## For other terminals (iTerm2, Ghostty, Kitty)
+
+These don't support `.terminal` files. Use the ANSI fallback script instead:
 
 ```bash
-./install.sh
+source bin/liquid-glass-env
 ```
 
-This adds commands to your shell so you can use them from anywhere.
+This replicates the same effect using OSC escape sequences.
 
-## How to use
+## Wrapper scripts (optional)
 
-### Claude Code with glass colors
+Run `./install.sh` to get convenience commands:
 
 ```bash
-claude --enforce-liquid-glass
+claude --enforce-liquid-glass   # apply glass then run claude
+codex --enforce-liquid-glass    # apply glass then run codex
+liquid-glass <any-command>      # apply glass then run anything
 ```
 
-or short:
-
-```bash
-claude -lg
-```
-
-### Codex with glass colors
-
-```bash
-codex --enforce-liquid-glass
-```
-
-### Any command with glass colors
-
-```bash
-liquid-glass <command>
-```
-
-For example: `liquid-glass vim`, `liquid-glass python3`
-
-### Just apply colors (no app)
-
-```bash
-source liquid-glass-env
-```
-
-This changes the colors in your current terminal window. Everything you run after this will use the glass palette.
-
-## Why two steps?
-
-The `.terminal` file sets the **window effects** (blur, transparency, background). But Terminal.app doesn't reliably override ANSI text colors when importing profiles - it keeps them white.
-
-The scripts fix that by injecting the actual color palette via ANSI escape codes at runtime.
-
-```
-.terminal file  -->  glass window (blur + opacity + blue bg)
-ANSI scripts    -->  text colors  (coral, mint, gold, aqua, etc.)
-```
-
-## Customization
-
-Edit `bin/liquid-glass-env` to change colors. Each line looks like:
-
-```bash
-printf '\033]4;1;rgb:ff/77/77\033\\'   # Red - soft coral
-```
-
-Change the `ff/77/77` hex values to whatever you want.
-
-## Uninstall
-
-Remove the aliases from `~/.zshrc` (or `~/.bashrc`) and delete this folder.
+These are only useful with non-Terminal.app terminals. If you're already in a Terminal.app window with the Liquid Glass profile, you don't need them.

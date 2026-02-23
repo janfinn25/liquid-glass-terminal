@@ -1,72 +1,44 @@
 #!/bin/bash
-# Liquid Glass ANSI Color Override
-# Source this file to force-apply the liquid glass palette to the current terminal.
+# Liquid Glass Terminal Environment
 #
-# The Liquid Glass.terminal profile sets window effects (blur, opacity, background)
-# but leaves ANSI colors as white. This script overrides ALL color slots via OSC
-# escape sequences so CLI tools (claude, codex, etc.) render with the glass palette.
+# The Liquid Glass.terminal profile does all the heavy lifting:
+# - Sets background to deep blue (#25288b) with blur + transparency
+# - Maps ALL 16 ANSI color slots to white (#feffff)
+# - This makes CLI tools like Claude Code render monochrome on glass
 #
-# Usage:
-#   source liquid-glass-env          # Apply to current session
-#   source liquid-glass-env && claude # Apply then launch
+# This script exists as a fallback for terminals that don't support
+# .terminal profile import (iTerm2, Ghostty, Kitty, etc.)
+# It replicates the same effect: all ANSI colors → white on blue glass.
 
-# ─── OSC 4: Redefine the 16 ANSI color slots ─────────────────────────
+# ─── All ANSI slots → white (matching Liquid Glass.terminal) ─────────
 
 # Normal (0-7)
-printf '\033]4;0;rgb:1e/21/33\033\\'    #  0 Black       - dark glass
-printf '\033]4;1;rgb:ff/77/77\033\\'    #  1 Red         - soft coral
-printf '\033]4;2;rgb:77/ff/ba\033\\'    #  2 Green       - mint glass
-printf '\033]4;3;rgb:ff/dd/77\033\\'    #  3 Yellow      - warm gold
-printf '\033]4;4;rgb:77/ba/ff\033\\'    #  4 Blue        - sky blue
-printf '\033]4;5;rgb:dd/77/ff\033\\'    #  5 Magenta     - violet
-printf '\033]4;6;rgb:77/ff/ff\033\\'    #  6 Cyan        - aqua glass
-printf '\033]4;7;rgb:e8/e8/f2\033\\'    #  7 White       - frosted white
+printf '\033]4;0;rgb:00/00/00\033\\'    #  0 Black (keep black for spacing)
+printf '\033]4;1;rgb:fe/ff/ff\033\\'    #  1 Red    → white
+printf '\033]4;2;rgb:fe/ff/ff\033\\'    #  2 Green  → white
+printf '\033]4;3;rgb:fe/ff/ff\033\\'    #  3 Yellow → white
+printf '\033]4;4;rgb:fe/ff/ff\033\\'    #  4 Blue   → white
+printf '\033]4;5;rgb:fe/ff/ff\033\\'    #  5 Magenta→ white
+printf '\033]4;6;rgb:fe/ff/ff\033\\'    #  6 Cyan   → white
+printf '\033]4;7;rgb:fe/ff/ff\033\\'    #  7 White  → white
 
 # Bright (8-15)
-printf '\033]4;8;rgb:60/66/7f\033\\'    #  8 Bright Black   - muted glass
-printf '\033]4;9;rgb:ff/99/99\033\\'    #  9 Bright Red     - light coral
-printf '\033]4;10;rgb:99/ff/cc\033\\'   # 10 Bright Green   - light mint
-printf '\033]4;11;rgb:ff/ed/99\033\\'   # 11 Bright Yellow  - light gold
-printf '\033]4;12;rgb:99/cc/ff\033\\'   # 12 Bright Blue    - light sky
-printf '\033]4;13;rgb:ed/99/ff\033\\'   # 13 Bright Magenta - light violet
-printf '\033]4;14;rgb:99/ff/ff\033\\'   # 14 Bright Cyan    - light aqua
-printf '\033]4;15;rgb:ff/ff/ff\033\\'   # 15 Bright White   - pure white
+printf '\033]4;8;rgb:00/00/00\033\\'    #  8 Bright Black (dim text)
+printf '\033]4;9;rgb:fe/ff/ff\033\\'    #  9 Bright Red    → white
+printf '\033]4;10;rgb:fe/ff/ff\033\\'   # 10 Bright Green  → white
+printf '\033]4;11;rgb:fe/ff/ff\033\\'   # 11 Bright Yellow → white
+printf '\033]4;12;rgb:fe/ff/ff\033\\'   # 12 Bright Blue   → white
+printf '\033]4;13;rgb:fe/ff/ff\033\\'   # 13 Bright Magenta→ white
+printf '\033]4;14;rgb:fe/ff/ff\033\\'   # 14 Bright Cyan   → white
+printf '\033]4;15;rgb:fe/ff/ff\033\\'   # 15 Bright White  → white
 
-# ─── OSC 10-19: Special color assignments ────────────────────────────
+# ─── Special colors ──────────────────────────────────────────────────
 
 printf '\033]10;rgb:f5/f1/f1\033\\'     # Foreground text
-printf '\033]11;rgb:25/28/8b\033\\'     # Background
-printf '\033]12;rgb:77/ff/ff\033\\'     # Cursor color
-printf '\033]13;rgb:f5/f1/f1\033\\'     # Mouse foreground
-printf '\033]14;rgb:4c/59/99\033\\'     # Mouse background
-printf '\033]17;rgb:4c/59/99\033\\'     # Selection background
-printf '\033]19;rgb:f5/f1/f1\033\\'     # Selection foreground
+printf '\033]11;rgb:25/28/8b\033\\'     # Background - deep glass blue
+printf '\033]12;rgb:fe/ff/ff\033\\'     # Cursor
 
-# ─── Extended 256-color overrides (16-255) ────────────────────────────
-# CLI tools like claude/codex may use extended palette indices directly.
-# Override the 216-color cube (16-231) and grayscale ramp (232-255)
-# with tinted versions that feel glassy on the blue background.
-
-# Grayscale ramp (232-255): tint toward blue-glass
-# Original: pure grays from #080808 to #eeeeee
-# Tinted: slight blue shift for glass feel
-for i in $(seq 0 23); do
-    # Base gray value (8 + 10*i), max 238
-    g=$(( 8 + 10 * i ))
-    # Shift: pull R down slightly, push B up slightly
-    r=$(printf '%02x' $(( g > 6 ? g - 4 : g )) )
-    gv=$(printf '%02x' $(( g > 3 ? g - 2 : g )) )
-    b=$(printf '%02x' $(( g + 8 > 255 ? 255 : g + 8 )) )
-    printf "\033]4;$(( 232 + i ));rgb:${r}/${gv}/${b}\033\\"
-done
-
-# ─── TERM environment hint ────────────────────────────────────────────
-# Ensure 256-color support is advertised
-if [[ "$TERM" == "xterm" ]]; then
-    export TERM="xterm-256color"
-fi
-
-# ─── Force SGR reset so new colors take effect immediately ────────────
+# ─── SGR reset ───────────────────────────────────────────────────────
 printf '\033[0m'
 
-echo "🔮 Liquid Glass palette active (16 ANSI + specials + 256-color grayscale)"
+echo "🔮 Liquid Glass active"
