@@ -1,0 +1,54 @@
+#!/bin/bash
+# Codex CLI Wrapper with Liquid Glass Support
+#
+# Drop-in replacement for 'codex' that adds --enforce-liquid-glass flag
+#
+# Usage:
+#   codex --enforce-liquid-glass [other args...]
+#   codex -lg [other args...]
+#   codex [normal args...]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Find the real codex binary (skip our wrapper)
+REAL_CODEX=""
+for p in $(echo "$PATH" | tr ':' '\n'); do
+    if [ "$p" != "$SCRIPT_DIR" ] && [ -x "$p/codex" ]; then
+        REAL_CODEX="$p/codex"
+        break
+    fi
+done
+
+if [ -z "$REAL_CODEX" ]; then
+    # Fallback to common locations
+    if [ -x "/opt/homebrew/bin/codex" ]; then
+        REAL_CODEX="/opt/homebrew/bin/codex"
+    elif [ -x "/usr/local/bin/codex" ]; then
+        REAL_CODEX="/usr/local/bin/codex"
+    elif command -v codex &>/dev/null; then
+        REAL_CODEX=$(command -v codex)
+    else
+        echo "Error: codex not found in PATH"
+        exit 1
+    fi
+fi
+
+# Check for our custom flag
+LIQUID_GLASS=false
+ARGS=()
+
+for arg in "$@"; do
+    if [ "$arg" = "--enforce-liquid-glass" ] || [ "$arg" = "--liquid-glass" ] || [ "$arg" = "-lg" ]; then
+        LIQUID_GLASS=true
+    else
+        ARGS+=("$arg")
+    fi
+done
+
+# Apply liquid glass if requested
+if [ "$LIQUID_GLASS" = true ]; then
+    source "$SCRIPT_DIR/liquid-glass-env"
+fi
+
+# Run the real codex
+exec "$REAL_CODEX" "${ARGS[@]}"

@@ -1,0 +1,15 @@
+#!/bin/bash
+# Claude Code with Liquid Glass colors (in-place)
+#
+# This applies the Liquid Glass color palette to the current terminal
+# and then launches Claude Code. Works with any terminal emulator.
+#
+# Usage: claude-liquid-glass [claude args...]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Apply the liquid glass color palette
+source "$SCRIPT_DIR/liquid-glass-env"
+
+# Pass all arguments to claude
+exec claude "$@"

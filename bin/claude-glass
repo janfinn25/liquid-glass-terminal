@@ -1,0 +1,27 @@
+#!/bin/bash
+# Claude Code with Liquid Glass Terminal Theme
+#
+# This script launches Claude Code in a new Terminal.app window
+# with the Liquid Glass visual theme applied.
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+THEME_FILE="$PROJECT_DIR/themes/Liquid Glass.terminal"
+
+# Check if theme is installed in Terminal.app
+THEME_INSTALLED=$(defaults read com.apple.Terminal "Window Settings" 2>/dev/null | grep -c "Liquid Glass")
+
+if [ "$THEME_INSTALLED" -eq 0 ]; then
+    echo "Installing Liquid Glass theme to Terminal.app..."
+    open "$THEME_FILE"
+    sleep 2
+fi
+
+# Launch claude in a new Terminal window with the Liquid Glass profile
+osascript <<EOF
+tell application "Terminal"
+    activate
+    do script "cd '$PWD' && claude $*" in (do script "")
+    set current settings of front window to settings set "Liquid Glass"
+end tell
+EOF

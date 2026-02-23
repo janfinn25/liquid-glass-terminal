@@ -1,0 +1,31 @@
+#!/bin/bash
+# Claude Code Wrapper with Liquid Glass Support
+#
+# Drop-in replacement for 'claude' that adds --enforce-liquid-glass flag
+#
+# Usage:
+#   claude --enforce-liquid-glass [other args...]
+#   claude [normal args...]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REAL_CLAUDE="/opt/homebrew/bin/claude"
+
+# Check for our custom flag
+LIQUID_GLASS=false
+ARGS=()
+
+for arg in "$@"; do
+    if [ "$arg" = "--enforce-liquid-glass" ] || [ "$arg" = "--liquid-glass" ] || [ "$arg" = "-lg" ]; then
+        LIQUID_GLASS=true
+    else
+        ARGS+=("$arg")
+    fi
+done
+
+# Apply liquid glass if requested
+if [ "$LIQUID_GLASS" = true ]; then
+    source "$SCRIPT_DIR/liquid-glass-env"
+fi
+
+# Run the real claude
+exec "$REAL_CLAUDE" "${ARGS[@]}"

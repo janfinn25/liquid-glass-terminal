@@ -1,0 +1,38 @@
+#!/bin/bash
+# Liquid Glass ANSI Color Palette
+# Source this file to apply colors to current terminal session
+#
+# Usage: source liquid-glass-env && claude
+#
+# These colors match the Liquid Glass.terminal profile exactly.
+# Use this when importing the .terminal file doesn't override ANSI colors.
+
+# OSC escape sequences to redefine terminal color slots
+# Format: \033]4;{index};rgb:{RR}/{GG}/{BB}\033\\
+
+# Normal colors (0-7)
+printf '\033]4;0;rgb:1e/21/33\033\\'   # Black - dark glass
+printf '\033]4;1;rgb:ff/77/77\033\\'   # Red - soft coral
+printf '\033]4;2;rgb:77/ff/ba\033\\'   # Green - mint glass
+printf '\033]4;3;rgb:ff/dd/77\033\\'   # Yellow - warm gold
+printf '\033]4;4;rgb:77/ba/ff\033\\'   # Blue - sky blue
+printf '\033]4;5;rgb:dd/77/ff\033\\'   # Magenta - violet
+printf '\033]4;6;rgb:77/ff/ff\033\\'   # Cyan - aqua glass
+printf '\033]4;7;rgb:e8/e8/f2\033\\'   # White - frosted white
+
+# Bright colors (8-15)
+printf '\033]4;8;rgb:60/66/7f\033\\'   # Bright Black - muted glass
+printf '\033]4;9;rgb:ff/99/99\033\\'   # Bright Red - light coral
+printf '\033]4;10;rgb:99/ff/cc\033\\'  # Bright Green - light mint
+printf '\033]4;11;rgb:ff/ed/99\033\\'  # Bright Yellow - light gold
+printf '\033]4;12;rgb:99/cc/ff\033\\'  # Bright Blue - light sky
+printf '\033]4;13;rgb:ed/99/ff\033\\'  # Bright Magenta - light violet
+printf '\033]4;14;rgb:99/ff/ff\033\\'  # Bright Cyan - light aqua
+printf '\033]4;15;rgb:ff/ff/ff\033\\'  # Bright White - pure white
+
+# Foreground and background
+printf '\033]10;rgb:f5/f1/f1\033\\'    # Foreground text
+printf '\033]11;rgb:25/28/8b\033\\'    # Background - deep glass blue
+printf '\033]12;rgb:77/ff/ff\033\\'    # Cursor - aqua
+
+echo "🔮 Liquid Glass palette active"

@@ -1,0 +1,17 @@
+#!/bin/bash
+# Liquid Glass - Universal ANSI Color Wrapper
+#
+# Applies liquid glass colors to ANY command
+#
+# Usage:
+#   liquid-glass claude [args...]
+#   liquid-glass codex [args...]
+#   liquid-glass <any-command> [args...]
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Apply the liquid glass color palette
+source "$SCRIPT_DIR/liquid-glass-env" 2>/dev/null
+
+# Run whatever command was passed
+exec "$@"
