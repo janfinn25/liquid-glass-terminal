@@ -1,99 +1,78 @@
 # Liquid Glass Terminal
 
-A custom visual theme that applies a "liquid glass" aesthetic to any terminal CLI tool (Claude Code, Codex, etc.).
+A translucent "liquid glass" theme for your terminal. Works with Claude Code, Codex, or any CLI tool.
 
-## Quick Start
+## Setup (one time)
+
+**Step 1** - Import the terminal profile:
+
+Double-click `themes/Liquid Glass.terminal`. This gives you the glass window (blur, transparency, dark blue background).
+
+**Step 2** - Install the color scripts:
 
 ```bash
-# Install
 ./install.sh
+```
 
-# Claude Code
+This adds commands to your shell so you can use them from anywhere.
+
+## How to use
+
+### Claude Code with glass colors
+
+```bash
 claude --enforce-liquid-glass
+```
+
+or short:
+
+```bash
 claude -lg
+```
 
-# OpenAI Codex
+### Codex with glass colors
+
+```bash
 codex --enforce-liquid-glass
-codex -lg
-
-# Any command
-liquid-glass <command> [args...]
 ```
 
-## What's Included
-
-```
-liquid-glass-claude/
-├── bin/
-│   ├── claude               # Claude wrapper with -lg flag
-│   ├── codex                # Codex wrapper with -lg flag
-│   ├── liquid-glass         # Universal wrapper for any command
-│   ├── claude-glass         # Launches new Terminal.app window with theme
-│   ├── claude-liquid-glass  # Applies colors in-place + launches claude
-│   └── liquid-glass-env     # Just the color palette (source it)
-├── themes/
-│   └── Liquid Glass.terminal  # Terminal.app profile
-├── install.sh
-└── README.md
-```
-
-## Usage
-
-### New Terminal Window (Terminal.app only)
+### Any command with glass colors
 
 ```bash
-claude-glass [claude args...]
+liquid-glass <command>
 ```
 
-Opens a fresh Terminal.app window with the Liquid Glass profile and runs Claude Code.
+For example: `liquid-glass vim`, `liquid-glass python3`
 
-### In-Place Colors (any terminal)
+### Just apply colors (no app)
 
 ```bash
-claude-lg [claude args...]
+source liquid-glass-env
 ```
 
-Applies the color palette to your current terminal session using ANSI escape sequences, then launches Claude. Works with iTerm2, Ghostty, Kitty, etc.
+This changes the colors in your current terminal window. Everything you run after this will use the glass palette.
 
-### Just the Colors
+## Why two steps?
 
-```bash
-source bin/liquid-glass-env
+The `.terminal` file sets the **window effects** (blur, transparency, background). But Terminal.app doesn't reliably override ANSI text colors when importing profiles - it keeps them white.
+
+The scripts fix that by injecting the actual color palette via ANSI escape codes at runtime.
+
 ```
-
-Apply the palette without launching Claude. Useful for combining with other tools.
-
-## Color Palette
-
-The Liquid Glass theme uses a soft, translucent color scheme:
-
-| Color      | Value     | Description      |
-|------------|-----------|------------------|
-| Black      | `#000000` | True black       |
-| Red        | `#ff5f5f` | Soft coral       |
-| Green      | `#5fffaf` | Mint             |
-| Yellow     | `#ffd75f` | Soft gold        |
-| Blue       | `#5fafff` | Sky blue         |
-| Magenta    | `#ff5fd7` | Pink             |
-| Cyan       | `#5fffff` | Aqua             |
-| White      | `#e4e4e4` | Soft white       |
-
-Bright variants follow a similar pattern with increased luminosity.
+.terminal file  -->  glass window (blur + opacity + blue bg)
+ANSI scripts    -->  text colors  (coral, mint, gold, aqua, etc.)
+```
 
 ## Customization
 
-Edit `bin/liquid-glass-env` to customize the ANSI color mappings. The format is:
+Edit `bin/liquid-glass-env` to change colors. Each line looks like:
 
 ```bash
-printf '\033]4;{color_index};rgb:{RR}/{GG}/{BB}\033\\'
+printf '\033]4;1;rgb:ff/77/77\033\\'   # Red - soft coral
 ```
 
-Color indices: 0-7 (normal), 8-15 (bright)
+Change the `ff/77/77` hex values to whatever you want.
 
 ## Uninstall
 
-Remove the aliases from your shell rc file and delete this directory:
-
-```bash
-rm -rf ~/git/liquid-glass-claude
-```
+Remove the aliases from `~/.zshrc` (or `~/.bashrc`) and delete this folder.
